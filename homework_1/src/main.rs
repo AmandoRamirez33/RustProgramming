@@ -8,6 +8,7 @@ fn celsius_to_fahrenheiht(c: f64) -> f64 {
     (c * 9.0 / 5.0) + FREEZING_POINT
 }
 fn assignment1(){
+    println!("----Assignment 1----");
     let temp_f: f64 = 32.0;
     let temp_c = fahrenheit_to_celsius(temp_f);
     println!("{:.1}°F is {:.1}°C", temp_f, temp_c);
@@ -27,6 +28,7 @@ fn is_even(n: i32) -> bool {
 }
 
 fn assignment2() {
+    println!("\n----Assignment 2----");
 let numbers = [3, 10,15,22,9,30,7,5,12,18];
 for n in numbers.iter(){
     if *n % 3 == 0 && *n % 5 == 0 {
@@ -73,6 +75,7 @@ fn check_guess(guess: i32, secret: i32) -> i32 {
     }
 }
 fn assignment3(){
+    println!("\n----Assignment 3---");
     let secret = 42;
     let mut guess = 30;
     let mut attempts = 0;
