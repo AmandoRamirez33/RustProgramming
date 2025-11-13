@@ -58,7 +58,6 @@ fn display_image(url: &str) -> Result<(), DogAppError> {
         .map_err(|e| DogAppError::Network(format!("{}", e)))?
         .into_reader();
 
-    // Read at most 5 MB of data to prevent excessive memory use
     let mut buffer = Vec::new();
     response
         .take(5_000_000)
@@ -67,7 +66,6 @@ fn display_image(url: &str) -> Result<(), DogAppError> {
 
     std::fs::write(tmp_file.path(), &buffer).map_err(|e| DogAppError::Image(e.to_string()))?;
 
-    // Try to display using viuer (ASCII fallback)
     if let Err(e) = viuer::print_from_file(tmp_file.path(), &viuer::Config::default()) {
         println!("(Could not display image: {})", e);
         println!("🖼️ Image URL: {}", url);
