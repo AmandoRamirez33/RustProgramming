@@ -1,85 +1,43 @@
-trait ShowInfo {
-    fn show_info(&self);
-}
+use std::rc::Rc;
+use std::cell::RefCell;
 
-struct Undergrad{
-   name:String,
-   major:String,
-   gpa:f32,
-}
-
-impl ShowInfo for Undergrad{
-   fn show_info(&self) {
-        println!(
-            "Undergraduate Student: {}\nMajor: {}\nGPA: {:.2}\n",
-            self.name, self.major, self.gpa
-        );
-    }
-}
-
-struct Grad{
-   name: String,
-   major: String,
-   gpa: f32,
-   thesis: String,
-}
-
-impl ShowInfo for Grad {
-   fn show_info(&self) {
-        println!(
-            "Graduate Student: {}\nMajor: {}\nGPA: {:.2}\nThesis: {}\n",
-            self.name, self.major, self.gpa, self.thesis
-        );
-    }
-}
-
-struct Enrollment <T: ShowInfo> {
-   students: Vec<T>,
-}
-
-impl<T: ShowInfo> Enrollment<T> {
-    fn new() -> Self {
-        Enrollment { students: Vec::new() }
+fn sharing_resource_refcell_count() {
+    struct FamilyMember {
+        tv: Rc<RefCell<TV>>,
     }
 
-    fn add_student(&mut self, student: T) {
-        self.students.push(student);
+    #[derive(Debug)]
+    struct TV {
+        channel: String,
     }
 
-    fn show_all(&self) {
-        for s in &self.students {
-            s.show_info();
+    fn member_start_watch_tv() -> FamilyMember {
+        let tv_is_on = Rc::new(RefCell::new(TV{channel:"BBC".to_string()}));
+        FamilyMember {
+            tv: tv_is_on, 
         }
     }
+
+    let dad = member_start_watch_tv();
+    let mom = FamilyMember { tv: Rc::clone(&dad.tv) };
+    println!("TV channel for mom {:?}", mom.tv);
+
+    let mut remote_control = dad.tv.borrow_mut();
+    println!("TV channel {:?}", remote_control);
+
+    remote_control.channel = "MTV".to_string();
+    println!("TV channel {:?}", remote_control);
+    drop(remote_control);
+    println!("TV channel for mom {:?}", mom.tv);
+
+    let me = FamilyMember {tv:Rc::clone(&dad.tv)};
+
+    println!("TV channel for me {:?}", me.tv);
+
+    println!("People watching: {}",Rc::strong_count(&me.tv) );
+
 }
 
-
-
-fn main() {
-    
-    let u1 = Undergrad {
-        name: "Amando".into(),
-        major: "Computer Science".into(),
-        gpa:3.5,
-    };
-
-    let g1 = Grad {
-        name: "Jared".into(),
-        major: "Psychology".into(),
-        gpa:3.4,
-        thesis: "Social Anxiety Disorder".into(),
-    };
-
-    let mut under_enrollment = Enrollment::new();
-    under_enrollment.add_student(u1);
-
-    let mut grad_enrollment = Enrollment::new();
-    grad_enrollment.add_student(g1);
-
-    println!("Undergraduate Students: ");
-    under_enrollment.show_all();
-
-    println!("Graduate Students: ");
-    grad_enrollment.show_all();
-
+fn main () {
+    sharing_resource_refcell_count();
 }
